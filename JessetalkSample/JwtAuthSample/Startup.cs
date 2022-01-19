@@ -10,6 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JwtAuthSample.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace JwtAuthSample
 {
@@ -25,6 +29,24 @@ namespace JwtAuthSample
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.Configure<JwtSetting>(Configuration);
+
+            var jwtSetting = new JwtSetting();
+            Configuration.GetSection("JwtSetting").Bind(jwtSetting);
+
+            services.AddAuthentication(options => 
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options => {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidIssuer = jwtSetting.Issuer,
+                        ValidAudience = jwtSetting.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSetting.SigningKey))
+                    };
+                });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -42,6 +64,8 @@ namespace JwtAuthSample
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "JwtAuthSample v1"));
             }
+
+            app.UseAuthentication();
 
             app.UseRouting();
 

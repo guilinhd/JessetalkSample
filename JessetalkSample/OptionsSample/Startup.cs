@@ -26,6 +26,8 @@ namespace OptionsSample
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<Student>(Configuration.GetSection("Student"));
+
+
             services.AddControllers();
         }
 
@@ -36,7 +38,7 @@ namespace OptionsSample
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
             app.UseRouting();
 
             app.UseStaticFiles();
