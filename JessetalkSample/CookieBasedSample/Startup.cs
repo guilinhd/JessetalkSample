@@ -7,9 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
+using CookieBasedSample.Datas;
+using CookieBasedSample.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace CookieBasedSample
 {
@@ -25,11 +27,25 @@ namespace CookieBasedSample
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>(options => {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
             services.AddAuthentication(options=>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             }).AddCookie();
 
+
+            services.Configure<IdentityOptions>(options => {
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            });
             services.AddControllersWithViews();
         }
 
