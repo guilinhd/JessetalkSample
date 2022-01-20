@@ -8,13 +8,27 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using System.Security.Principal;
-
+using CookieBasedSample.ViewModels;
 
 namespace CookieBasedSample.Controllers
 {
+    
     public class AccountController : Controller
     {
-        public IActionResult MyLogin()
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Login(LoginViewModel model)
         {
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.Name, "molw"),
@@ -27,7 +41,7 @@ namespace CookieBasedSample.Controllers
             return Ok();
         }
 
-        public IActionResult MyLogout()
+        public IActionResult Logout()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Ok();
